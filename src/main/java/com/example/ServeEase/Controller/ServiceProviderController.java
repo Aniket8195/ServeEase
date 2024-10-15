@@ -118,6 +118,7 @@ public class ServiceProviderController {
             errorResponse.put("token", null);
             errorResponse.put("message", "Error in logging in service provider.");
             return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+
         }
     }
 
