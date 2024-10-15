@@ -29,5 +29,5 @@ RUN mvn clean package -DskipTests
 # Expose the port
 EXPOSE 8080
 
-# Run the jar from target folder after build
-ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "target/ServeEase.jar"]
+# Run the JAR file with the correct name
+ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "target/ServeEase-0.0.1-SNAPSHOT.jar"]
