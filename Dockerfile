@@ -1,27 +1,20 @@
+# Start with a base image containing Java runtime
 FROM openjdk:19-jdk-alpine
 
-# Set the working directory
-WORKDIR /app
+# Add Maintainer Info
+LABEL maintainer="your.email@example.com"
 
-# Copy the Maven wrapper and the .mvn directory to the container
-COPY .mvn/ .mvn
-COPY mvnw .
-COPY pom.xml .
+# Add a volume pointing to /tmp
+VOLUME /tmp
 
-# Ensure the mvnw script is executable
-RUN chmod +x ./mvnw
-
-# Download dependencies
-RUN ./mvnw dependency:go-offline
-
-# Copy the source code to the container
-COPY src ./src
-
-# Build the application
-RUN ./mvnw clean package -DskipTests
-
-# Expose the port on which the Spring Boot application runs
+# Make port 8080 available to the world outside this container
 EXPOSE 8080
 
-# Run the Spring Boot application
-ENTRYPOINT ["java", "-jar", "target/ServeEase.jar"]
+# The application's jar file, set as a build argument
+ARG JAR_FILE=target/ServeEase.jar
+
+# Add the application's jar to the container
+ADD ${JAR_FILE} app.jar
+
+# Run the jar file
+ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "/app.jar"]
