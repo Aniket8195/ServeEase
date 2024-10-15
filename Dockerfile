@@ -1,20 +1,27 @@
-# Start with a base image containing Java runtime
 FROM openjdk:19-jdk-alpine
 
-# Add Maintainer Info
-LABEL maintainer="your.email@example.com"
+# Set the working directory
+WORKDIR /app
 
-# Add a volume pointing to /tmp
-VOLUME /tmp
+# Copy Maven wrapper and project files
+COPY .mvn/ .mvn
+COPY mvnw .
+COPY pom.xml .
 
-# Make port 8080 available to the world outside this container
+# Ensure the mvnw script is executable
+RUN chmod +x ./mvnw
+
+# Download dependencies
+RUN ./mvnw dependency:go-offline
+
+# Copy the source code to the container
+COPY src ./src
+
+# Build the application
+RUN ./mvnw clean package -DskipTests
+
+# Expose the port
 EXPOSE 8080
 
-# The application's jar file, set as a build argument
-ARG JAR_FILE=target/ServeEase.jar
-
-# Add the application's jar to the container
-ADD ${JAR_FILE} app.jar
-
-# Run the jar file
-ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "/app.jar"]
+# Run the jar from target folder after build
+ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "target/ServeEase.jar"]
