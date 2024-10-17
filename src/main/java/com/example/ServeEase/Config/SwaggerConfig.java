@@ -9,8 +9,8 @@ public class SwaggerConfig {
     @Bean
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
-                .info(new Info().title("SpringMVN API Documentation")
+                .info(new Info().title("Serve Ease API Documentation")
                         .version("1.0")
-                        .description("API documentation for SpringMVN application"));
+                        .description("API documentation for Serve Ease"));
     }
 }

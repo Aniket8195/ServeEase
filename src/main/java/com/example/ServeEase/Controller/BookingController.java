@@ -11,6 +11,7 @@ import com.example.ServeEase.Repository.BookingRepo;
 import com.example.ServeEase.Repository.CategoryRepo;
 import com.example.ServeEase.Repository.ServiceProviderRepo;
 import com.example.ServeEase.Repository.ServiceSeekerRepo;
+import com.example.ServeEase.Service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +38,10 @@ public class BookingController {
     @Autowired
     private CategoryRepo categoryRepo;
 
+    @Autowired
+    private EmailService emailService;
+
+
     @PostMapping("/add")
     public ResponseEntity<?> addBooking(@RequestBody BookingRequestDTO bookingRequest) {
         try {
@@ -58,7 +63,16 @@ public class BookingController {
             booking.setCategory(categoryOpt.get());
             booking.setStatus(Booking.Status.PENDING);
             booking.setBookingDate(bookingRequest.getBookingDate());
-            Booking savedBooking = bookingRepo.save(booking);
+            bookingRepo.save(booking);
+
+            // Send email to provider
+            emailService.sendBookingEmail(providerOpt.get().getEmail(), "New Booking Request",
+                    "You have a new booking request for " + categoryOpt.get().getCategoryName() + " on " + bookingRequest.getBookingDate() + ". Please login to ServeEase to confirm or cancel the booking.");
+
+            // Send email to seeker
+            emailService.sendBookingEmail(seekerOpt.get().getEmail(), "Booking Request Sent",
+                    "Your booking request for " + categoryOpt.get().getCategoryName() + " on " + bookingRequest.getBookingDate() + " has been sent to the provider. You will receive an email once the provider confirms or cancels the booking.");
+
             return ResponseEntity.ok("Booking created successfully.");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error while creating booking: " + e.getMessage());
@@ -67,18 +81,56 @@ public class BookingController {
 
     @PutMapping("/cancel/{id}")
     public ResponseEntity<?> cancelBooking(@PathVariable Long id) {
+
+        Optional<Booking> bookingOpt = bookingRepo.findById(id);
+        if (bookingOpt.isEmpty()) {
+            return ResponseEntity.badRequest().body("Booking not found.");
+        }
+        Booking booking = bookingOpt.get();
+        emailService.sendBookingEmail(booking.getProvider().getEmail(), "Booking Canceled",
+                "The booking with " + booking.getSeeker().getEmail()+ " " + booking.getSeeker().getName() + " for " + booking.getCategory().getCategoryName() + " on " + booking.getBookingDate() + " has been canceled.");
+
+        emailService.sendBookingEmail(booking.getSeeker().getEmail(), "Booking Canceled",
+                "The booking with " + booking.getProvider().getEmail() + " " + booking.getProvider().getName() + " for " + booking.getCategory().getCategoryName() + " on " + booking.getBookingDate() + " has been canceled.");
+
+
         return updateBookingStatus(id, Booking.Status.CANCELED);
     }
 
     // Method to confirm a booking
     @PutMapping("/confirm/{id}")
     public ResponseEntity<?> confirmBooking(@PathVariable Long id) {
+
+        Optional<Booking> bookingOpt = bookingRepo.findById(id);
+        if (bookingOpt.isEmpty()) {
+            return ResponseEntity.badRequest().body("Booking not found.");
+        }
+        Booking booking = bookingOpt.get();
+        emailService.sendBookingEmail(booking.getProvider().getEmail(), "Booking Confirmed",
+                "The booking with " + booking.getSeeker().getEmail() + " " + booking.getSeeker().getName() + " for " + booking.getCategory().getCategoryName() + " on " + booking.getBookingDate() + " has been confirmed.");
+
+        emailService.sendBookingEmail(booking.getSeeker().getEmail(), "Booking Confirmed",
+                "The booking with " + booking.getProvider().getEmail() + " " + booking.getProvider().getName() + " for " + booking.getCategory().getCategoryName() + " on " + booking.getBookingDate() + " has been confirmed.");
+
         return updateBookingStatus(id, Booking.Status.CONFIRMED);
     }
 
     // Method to complete a booking
     @PutMapping("/complete/{id}")
     public ResponseEntity<?> completeBooking(@PathVariable Long id) {
+
+        Optional<Booking> bookingOpt = bookingRepo.findById(id);
+        if (bookingOpt.isEmpty()) {
+            return ResponseEntity.badRequest().body("Booking not found.");
+        }
+        Booking booking = bookingOpt.get();
+        emailService.sendBookingEmail(booking.getProvider().getEmail(), "Booking Completed",
+                "The booking with " + booking.getSeeker().getEmail() + " " + booking.getSeeker().getName() + " for " + booking.getCategory().getCategoryName() + " on " + booking.getBookingDate() + " has been completed.");
+
+        emailService.sendBookingEmail(booking.getSeeker().getEmail(), "Booking Completed",
+                "The booking with " + booking.getProvider().getEmail() + " " + booking.getProvider().getName() + " for " + booking.getCategory().getCategoryName() + " on " + booking.getBookingDate() + " has been completed.");
+
+
         return updateBookingStatus(id, Booking.Status.COMPLETED);
     }
     private ResponseEntity<?> updateBookingStatus(Long id, Booking.Status status) {

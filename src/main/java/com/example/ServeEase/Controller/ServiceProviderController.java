@@ -11,6 +11,7 @@ import com.example.ServeEase.Model.User;
 import com.example.ServeEase.Repository.CategoryRepo;
 import com.example.ServeEase.Repository.ServiceProviderRepo;
 
+import com.example.ServeEase.Service.EmailService;
 import com.example.ServeEase.Utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -41,6 +42,8 @@ public class ServiceProviderController {
     @Autowired
     private CategoryRepo categoryRepo;
 
+    @Autowired
+    private EmailService emailService;
 
     @PostMapping("/register")
     public ResponseEntity<String> registerServiceProvider(@RequestBody ServiceProviderRegDTO providerDTO){
@@ -60,7 +63,7 @@ public class ServiceProviderController {
              provider.setCategories(categories);
 
              serviceProviderRepo.save(provider);
-
+             emailService.sendWelcomeEmail(providerDTO.getEmail(), providerDTO.getName());
              return new ResponseEntity<>("Service provider registered successfully.", HttpStatus.CREATED);
          }
          catch (Exception e)

@@ -11,7 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -39,13 +41,16 @@ public class CategoryController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<CategoryResDTO>> getAllCategories() {
+    public ResponseEntity<Map<String, List<CategoryResDTO>>> getAllCategories() {
         List<Category> categories = categoryRepo.findAll();
         List<CategoryResDTO> categoryResDTOs = categories.stream()
-                .map(category -> new CategoryResDTO(category.getCategoryId(), category .getCategoryName()))
+                .map(category -> new CategoryResDTO(category.getCategoryId(), category.getCategoryName()))
                 .collect(Collectors.toList());
-        return ResponseEntity.ok(categoryResDTOs);
 
+        Map<String, List<CategoryResDTO>> response = new HashMap<>();
+        response.put("data", categoryResDTOs);
+
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/delete")

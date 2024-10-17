@@ -5,6 +5,7 @@ import com.example.ServeEase.DTO.ServiceSeekerRegDTO;
 import com.example.ServeEase.Model.ServiceSeeker;
 import com.example.ServeEase.Model.User;
 import com.example.ServeEase.Repository.ServiceSeekerRepo;
+import com.example.ServeEase.Service.EmailService;
 import com.example.ServeEase.Utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,6 +30,9 @@ public class ServiceSeekerController {
     private PasswordEncoder passwordEncoder;
 
     @Autowired
+    private EmailService emailService;
+
+    @Autowired
     private JwtUtil jwtUtil;
     @PostMapping("/register")
     public ResponseEntity<String> registerServiceSeeker(@RequestBody ServiceSeekerRegDTO serviceSeekerDTO) {
@@ -43,6 +47,7 @@ public class ServiceSeekerController {
            seeker.setPassword(passwordEncoder.encode(seeker.getPassword()));
            seeker.setRole(User.Role.SEEKER);
            serviceSeekerRepo.save(seeker);
+              emailService.sendWelcomeEmail(seeker.getEmail(), seeker.getName());
            return new ResponseEntity<>("Service seeker registered successfully.", HttpStatus.CREATED);
          } catch (Exception e) {
               return ResponseEntity.badRequest().body("Error in registering service seeker.");
