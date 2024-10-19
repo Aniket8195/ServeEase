@@ -52,9 +52,14 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3000")); // Add allowed origins
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE")); // Add allowed methods
+        
+        // Add all the allowed origins including your Flutter app and localhost
+        configuration.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:8080")); 
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Ensure all methods are allowed
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type")); // Add allowed headers
+        
+        // Allow credentials if required
+        configuration.setAllowCredentials(true); // Allow cookies or other credentials like JWT tokens
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration); // Apply the CORS configuration to all endpoints
