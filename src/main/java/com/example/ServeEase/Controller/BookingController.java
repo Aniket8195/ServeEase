@@ -67,12 +67,12 @@ public class BookingController {
             bookingRepo.save(booking);
 
             // Send email to provider
-            emailService.sendBookingEmail(providerOpt.get().getEmail(), "New Booking Request",
-                    "You have a new booking request for " + categoryOpt.get().getCategoryName() + " on " + bookingRequest.getBookingDate() + ". Please login to ServeEase to confirm or cancel the booking.");
-
-            // Send email to seeker
-            emailService.sendBookingEmail(seekerOpt.get().getEmail(), "Booking Request Sent",
-                    "Your booking request for " + categoryOpt.get().getCategoryName() + " on " + bookingRequest.getBookingDate() + " has been sent to the provider. You will receive an email once the provider confirms or cancels the booking.");
+//            emailService.sendBookingEmail(providerOpt.get().getEmail(), "New Booking Request",
+//                    "You have a new booking request for " + categoryOpt.get().getCategoryName() + " on " + bookingRequest.getBookingDate() + ". Please login to ServeEase to confirm or cancel the booking.");
+//
+//            // Send email to seeker
+//            emailService.sendBookingEmail(seekerOpt.get().getEmail(), "Booking Request Sent",
+//                    "Your booking request for " + categoryOpt.get().getCategoryName() + " on " + bookingRequest.getBookingDate() + " has been sent to the provider. You will receive an email once the provider confirms or cancels the booking.");
 
             return ResponseEntity.ok("Booking created successfully.");
         } catch (Exception e) {
@@ -88,11 +88,11 @@ public class BookingController {
             return ResponseEntity.badRequest().body("Booking not found.");
         }
         Booking booking = bookingOpt.get();
-        emailService.sendBookingEmail(booking.getProvider().getEmail(), "Booking Canceled",
-                "The booking with " + booking.getSeeker().getEmail()+ " " + booking.getSeeker().getName() + " for " + booking.getCategory().getCategoryName() + " on " + booking.getBookingDate() + " has been canceled.");
-
-        emailService.sendBookingEmail(booking.getSeeker().getEmail(), "Booking Canceled",
-                "The booking with " + booking.getProvider().getEmail() + " " + booking.getProvider().getName() + " for " + booking.getCategory().getCategoryName() + " on " + booking.getBookingDate() + " has been canceled.");
+//        emailService.sendBookingEmail(booking.getProvider().getEmail(), "Booking Canceled",
+//                "The booking with " + booking.getSeeker().getEmail()+ " " + booking.getSeeker().getName() + " for " + booking.getCategory().getCategoryName() + " on " + booking.getBookingDate() + " has been canceled.");
+//
+//        emailService.sendBookingEmail(booking.getSeeker().getEmail(), "Booking Canceled",
+//                "The booking with " + booking.getProvider().getEmail() + " " + booking.getProvider().getName() + " for " + booking.getCategory().getCategoryName() + " on " + booking.getBookingDate() + " has been canceled.");
 
 
         return updateBookingStatus(id, Booking.Status.CANCELED);
@@ -107,11 +107,11 @@ public class BookingController {
             return ResponseEntity.badRequest().body("Booking not found.");
         }
         Booking booking = bookingOpt.get();
-        emailService.sendBookingEmail(booking.getProvider().getEmail(), "Booking Confirmed",
-                "The booking with " + booking.getSeeker().getEmail() + " " + booking.getSeeker().getName() + " for " + booking.getCategory().getCategoryName() + " on " + booking.getBookingDate() + " has been confirmed.");
-
-        emailService.sendBookingEmail(booking.getSeeker().getEmail(), "Booking Confirmed",
-                "The booking with " + booking.getProvider().getEmail() + " " + booking.getProvider().getName() + " for " + booking.getCategory().getCategoryName() + " on " + booking.getBookingDate() + " has been confirmed.");
+//        emailService.sendBookingEmail(booking.getProvider().getEmail(), "Booking Confirmed",
+//                "The booking with " + booking.getSeeker().getEmail() + " " + booking.getSeeker().getName() + " for " + booking.getCategory().getCategoryName() + " on " + booking.getBookingDate() + " has been confirmed.");
+//
+//        emailService.sendBookingEmail(booking.getSeeker().getEmail(), "Booking Confirmed",
+//                "The booking with " + booking.getProvider().getEmail() + " " + booking.getProvider().getName() + " for " + booking.getCategory().getCategoryName() + " on " + booking.getBookingDate() + " has been confirmed.");
 
         return updateBookingStatus(id, Booking.Status.CONFIRMED);
     }
@@ -125,12 +125,12 @@ public class BookingController {
             return ResponseEntity.badRequest().body("Booking not found.");
         }
         Booking booking = bookingOpt.get();
-        emailService.sendBookingEmail(booking.getProvider().getEmail(), "Booking Completed",
-                "The booking with " + booking.getSeeker().getEmail() + " " + booking.getSeeker().getName() + " for " + booking.getCategory().getCategoryName() + " on " + booking.getBookingDate() + " has been completed.");
-
-        emailService.sendBookingEmail(booking.getSeeker().getEmail(), "Booking Completed",
-                "The booking with " + booking.getProvider().getEmail() + " " + booking.getProvider().getName() + " for " + booking.getCategory().getCategoryName() + " on " + booking.getBookingDate() + " has been completed.");
-
+//        emailService.sendBookingEmail(booking.getProvider().getEmail(), "Booking Completed",
+//                "The booking with " + booking.getSeeker().getEmail() + " " + booking.getSeeker().getName() + " for " + booking.getCategory().getCategoryName() + " on " + booking.getBookingDate() + " has been completed.");
+//
+//        emailService.sendBookingEmail(booking.getSeeker().getEmail(), "Booking Completed",
+//                "The booking with " + booking.getProvider().getEmail() + " " + booking.getProvider().getName() + " for " + booking.getCategory().getCategoryName() + " on " + booking.getBookingDate() + " has been completed.");
+//
 
         return updateBookingStatus(id, Booking.Status.COMPLETED);
     }
