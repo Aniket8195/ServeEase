@@ -13,6 +13,7 @@ import com.example.ServeEase.Repository.ServiceProviderRepo;
 
 import com.example.ServeEase.Service.EmailService;
 import com.example.ServeEase.Utils.JwtUtil;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -45,6 +46,7 @@ public class ServiceProviderController {
     @Autowired
     private EmailService emailService;
 
+    @Transactional
     @PostMapping("/register")
     public ResponseEntity<String> registerServiceProvider(@RequestBody ServiceProviderRegDTO providerDTO){
        try

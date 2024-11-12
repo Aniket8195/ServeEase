@@ -79,9 +79,12 @@ public class CategoryController {
 
             List<ServiceProviderResponseDTO> serviceProviderDTOs = category.getServiceProviders().stream()
                     .map(sp -> new ServiceProviderResponseDTO(sp.getUserId(), sp.getName(), sp.getEmail(), sp.getRating()))
-                    .collect(Collectors.toList());
+                    .toList();
 
-            return ResponseEntity.ok(serviceProviderDTOs);
+            return ResponseEntity.ok(Map.of(
+                    "data",serviceProviderDTOs
+                    )
+            );
         } catch (Exception e) {
             System.err.println("Error: " + e.getMessage());
             return ResponseEntity.badRequest().body("Error in fetching category.");

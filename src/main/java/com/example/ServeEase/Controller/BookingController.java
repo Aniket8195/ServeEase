@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -173,9 +174,11 @@ public class BookingController {
                             booking.getStatus(),
                             booking.getBookingDate()
                     ))
-                    .collect(Collectors.toList());
+                    .toList();
 
-            return ResponseEntity.ok(bookingDTOs);
+            return ResponseEntity.ok(Map.of(
+                    "data",bookingDTOs
+            ));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error retrieving bookings: " + e.getMessage());
         }
@@ -203,9 +206,11 @@ public class BookingController {
                             booking.getStatus(),
                             booking.getBookingDate( )
                     ))
-                    .collect(Collectors.toList());
+                    .toList();
 
-            return ResponseEntity.ok(bookingDTOs);
+            return ResponseEntity.ok(Map.of(
+                    "data",bookingDTOs
+            ));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error retrieving bookings: " + e.getMessage());
         }
