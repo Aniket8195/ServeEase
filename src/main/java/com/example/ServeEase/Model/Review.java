@@ -30,7 +30,8 @@ public class Review {
 //    @JoinColumn(name = "category_id")
 //    private Category category;
 
-
+    @JoinColumn(name = "booking_id")
+    private float bookingId;
     private float rating;
     private String comments;
 

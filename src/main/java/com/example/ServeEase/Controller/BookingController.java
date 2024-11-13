@@ -2,6 +2,7 @@ package com.example.ServeEase.Controller;
 
 
 import com.example.ServeEase.DTO.BookingDTO;
+import com.example.ServeEase.DTO.BookingDTO1;
 import com.example.ServeEase.DTO.BookingRequestDTO;
 import com.example.ServeEase.Model.Booking;
 import com.example.ServeEase.Model.Category;
@@ -12,6 +13,7 @@ import com.example.ServeEase.Repository.CategoryRepo;
 import com.example.ServeEase.Repository.ServiceProviderRepo;
 import com.example.ServeEase.Repository.ServiceSeekerRepo;
 import com.example.ServeEase.Service.EmailService;
+import com.example.ServeEase.Service.RatingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +23,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/booking")
@@ -42,6 +43,9 @@ public class BookingController {
     @Autowired
     private EmailService emailService;
 
+
+    @Autowired
+    private RatingService ratingService;
 
     @PostMapping("/add")
     public ResponseEntity<?> addBooking(@RequestBody BookingRequestDTO bookingRequest) {
@@ -176,8 +180,19 @@ public class BookingController {
                     ))
                     .toList();
 
+            List<BookingDTO1> bookingDTOs1 = bookings.stream()
+                    .map(booking -> new BookingDTO1(
+                            booking.getBookingId(),
+                            booking.getCategory() != null ? booking.getCategory().getCategoryName() : null,
+                            booking.getStatus(),
+                            booking.getBookingDate(),
+                            ratingService.getRatingByBookingId(booking.getBookingId()),
+                            Math.toIntExact(booking.getProvider().getUserId()),
+                            Math.toIntExact(booking.getSeeker().getUserId())
+                    ))
+                    .toList();
             return ResponseEntity.ok(Map.of(
-                    "data",bookingDTOs
+                    "data", bookingDTOs1
             ));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error retrieving bookings: " + e.getMessage());
@@ -208,8 +223,19 @@ public class BookingController {
                     ))
                     .toList();
 
+            List<BookingDTO1> bookingDTOs1 = bookings.stream()
+                    .map(booking -> new BookingDTO1(
+                            booking.getBookingId(),
+                            booking.getCategory() != null ? booking.getCategory().getCategoryName() : null,
+                            booking.getStatus(),
+                            booking.getBookingDate(),
+                            ratingService.getRatingByBookingId(booking.getBookingId()),
+                            Math.toIntExact(booking.getProvider().getUserId()),
+                            Math.toIntExact(booking.getSeeker().getUserId())
+                    ))
+                    .toList();
             return ResponseEntity.ok(Map.of(
-                    "data",bookingDTOs
+                    "data", bookingDTOs1
             ));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error retrieving bookings: " + e.getMessage());

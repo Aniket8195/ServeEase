@@ -54,7 +54,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         // Add all the allowed origins including your Flutter app and localhost
-        configuration.setAllowedOrigins(List.of("http://localhost:63696", "http://localhost:8080"));
+        configuration.setAllowedOrigins(List.of("http://localhost:63112", "http://localhost:8080"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Ensure all methods are allowed
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type")); // Add allowed headers
 

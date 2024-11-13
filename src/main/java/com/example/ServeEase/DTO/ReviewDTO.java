@@ -13,5 +13,6 @@ public class ReviewDTO {
     private Long providerId; // The provider receiving the review
     private float rating;
     private String comments;
+    private Long bookingId;
     private boolean isSeekerReview;
 }

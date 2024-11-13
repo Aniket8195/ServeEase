@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ReviewRepo extends JpaRepository<Review,Long> {
@@ -18,4 +19,6 @@ public interface ReviewRepo extends JpaRepository<Review,Long> {
 
     @Query("SELECT r FROM Review r WHERE r.seeker.userId = :seekerId")
     List<Review> findReviewsBySeekerId(@Param("seekerId") Long seekerId);
+
+    Optional<Review> findReviewByBookingId(Long bookingId);
 }

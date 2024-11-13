@@ -67,5 +67,10 @@ public class RatingService {
             userRepo.save(user);
         }
     }
+
+    public float getRatingByBookingId(Long bookingId) {
+        Optional<Review> review = reviewRepo.findReviewByBookingId(bookingId);
+        return review.map(Review::getRating).orElse(0.0f);
+    }
 }
 
