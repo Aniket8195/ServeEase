@@ -8,10 +8,8 @@ import com.example.ServeEase.Model.Booking;
 import com.example.ServeEase.Model.Category;
 import com.example.ServeEase.Model.ServiceProvider;
 import com.example.ServeEase.Model.ServiceSeeker;
-import com.example.ServeEase.Repository.BookingRepo;
-import com.example.ServeEase.Repository.CategoryRepo;
-import com.example.ServeEase.Repository.ServiceProviderRepo;
-import com.example.ServeEase.Repository.ServiceSeekerRepo;
+import com.example.ServeEase.Model.Review;
+import com.example.ServeEase.Repository.*;
 import com.example.ServeEase.Service.EmailService;
 import com.example.ServeEase.Service.RatingService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,8 +42,11 @@ public class BookingController {
     private EmailService emailService;
 
 
+//    @Autowired
+//    private RatingService ratingService;
+
     @Autowired
-    private RatingService ratingService;
+    private ReviewRepository reviewRepository;
 
     @PostMapping("/add")
     public ResponseEntity<?> addBooking(@RequestBody BookingRequestDTO bookingRequest) {
@@ -181,15 +182,19 @@ public class BookingController {
                     .toList();
 
             List<BookingDTO1> bookingDTOs1 = bookings.stream()
-                    .map(booking -> new BookingDTO1(
-                            booking.getBookingId(),
-                            booking.getCategory() != null ? booking.getCategory().getCategoryName() : null,
-                            booking.getStatus(),
-                            booking.getBookingDate(),
-                            ratingService.getRatingByBookingId(booking.getBookingId()),
-                            Math.toIntExact(booking.getProvider().getUserId()),
-                            Math.toIntExact(booking.getSeeker().getUserId())
-                    ))
+                    .map(booking -> {
+                        var reviewOpt = reviewRepository.findByBookingIdAndSeekerId(booking.getBookingId(), seekerId);
+                        float rating = reviewOpt.map(Review::getRating).orElse(0.0f);
+                        return new BookingDTO1(
+                                booking.getBookingId(),
+                                booking.getCategory() != null ? booking.getCategory().getCategoryName() : null,
+                                booking.getStatus(),
+                                booking.getBookingDate(),
+                                rating,
+                                Math.toIntExact(booking.getProvider().getUserId()),
+                                Math.toIntExact(booking.getSeeker().getUserId())
+                        );
+                    })
                     .toList();
             return ResponseEntity.ok(Map.of(
                     "data", bookingDTOs1
@@ -224,15 +229,23 @@ public class BookingController {
                     .toList();
 
             List<BookingDTO1> bookingDTOs1 = bookings.stream()
-                    .map(booking -> new BookingDTO1(
-                            booking.getBookingId(),
-                            booking.getCategory() != null ? booking.getCategory().getCategoryName() : null,
-                            booking.getStatus(),
-                            booking.getBookingDate(),
-                            ratingService.getRatingByBookingId(booking.getBookingId()),
-                            Math.toIntExact(booking.getProvider().getUserId()),
-                            Math.toIntExact(booking.getSeeker().getUserId())
-                    ))
+                    .map(booking -> {
+                        // Fetch the review for the booking and provider
+                        Optional<Review> reviewOpt = reviewRepository.findByBookingIdAndProviderId(booking.getBookingId(), providerId);
+
+                        // Rating is 0 if no review exists, otherwise use the review's rating
+                        float rating = reviewOpt.map(Review::getRating).orElse(0.0f);
+
+                        return new BookingDTO1(
+                                booking.getBookingId(),
+                                booking.getCategory() != null ? booking.getCategory().getCategoryName() : null,
+                                booking.getStatus(),
+                                booking.getBookingDate(),
+                                rating,
+                                Math.toIntExact(booking.getProvider().getUserId()),
+                                Math.toIntExact(booking.getSeeker().getUserId())
+                        );
+                    })
                     .toList();
             return ResponseEntity.ok(Map.of(
                     "data", bookingDTOs1

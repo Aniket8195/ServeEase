@@ -2,26 +2,25 @@ package com.example.ServeEase.Service;
 
 import com.example.ServeEase.Model.Review;
 import com.example.ServeEase.Model.User;
-import com.example.ServeEase.Repository.ReviewRepo;
+import com.example.ServeEase.Repository.ReviewRepository;
 import com.example.ServeEase.Repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class RatingService {
 
     @Autowired
-    private ReviewRepo reviewRepo;
+    private ReviewRepository reviewRepository;
 
     @Autowired
     private UserRepo userRepo;
 
     public void calculateAverageProviderRating(Long providerId) {
-        List<Review> reviews = reviewRepo.findReviewsByProviderId(providerId);
+        List<Review> reviews = reviewRepository.findReviewsByProviderId(providerId);
 
 
         List<Review> seekerReviews = reviews.stream()
@@ -45,7 +44,7 @@ public class RatingService {
     }
 
     public void calculateAverageSeekerRating(Long seekerId) {
-        List<Review> reviews = reviewRepo.findReviewsBySeekerId(seekerId);
+        List<Review> reviews = reviewRepository.findReviewsBySeekerId(seekerId);
 
 
         List<Review> providerReviews = reviews.stream()
@@ -69,7 +68,7 @@ public class RatingService {
     }
 
     public float getRatingByBookingId(Long bookingId) {
-        Optional<Review> review = reviewRepo.findReviewByBookingId(bookingId);
+        Optional<Review> review = reviewRepository.findReviewByBookingId(bookingId);
         return review.map(Review::getRating).orElse(0.0f);
     }
 }

@@ -2,7 +2,6 @@ package com.example.ServeEase.Controller;
 
 
 import com.example.ServeEase.DTO.ReviewDTO;
-import com.example.ServeEase.Model.Category;
 import com.example.ServeEase.Model.Review;
 import com.example.ServeEase.Model.ServiceProvider;
 import com.example.ServeEase.Model.ServiceSeeker;
@@ -22,7 +21,7 @@ import java.util.Optional;
 public class ReviewController {
 
     @Autowired
-    private ReviewRepo reviewRepo;
+    private ReviewRepository reviewRepository;
 
     @Autowired
     private ServiceSeekerRepo serviceSeekerRepo;
@@ -44,6 +43,7 @@ public class ReviewController {
     public ResponseEntity<?> addReview(@RequestBody ReviewDTO reviewDTO) {
         try {
 
+            System.out.println(reviewDTO);
             Optional<ServiceSeeker> seekerOpt = serviceSeekerRepo.findById(reviewDTO.getSeekerId());
             Optional<ServiceProvider> providerOpt = serviceProviderRepo.findById(reviewDTO.getProviderId());
 //            Optional<Category> categoryOpt = categoryRepo.findById(reviewDTO.getCategoryId());
@@ -58,14 +58,14 @@ public class ReviewController {
             //review.setCategory(categoryOpt.get());
             review.setRating(reviewDTO.getRating());
             review.setComments(reviewDTO.getComments());
-
+             review.setBookingId(reviewDTO.getBookingId());
             review.setSeekerReview(reviewDTO.isSeekerReview());
 
 
             ratingService.calculateAverageProviderRating(reviewDTO.getProviderId());
             ratingService.calculateAverageSeekerRating(reviewDTO.getSeekerId());
 
-            reviewRepo.save(review);
+            reviewRepository.save(review);
             return ResponseEntity.ok("Review added successfully.");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error adding review: " + e.getMessage());
@@ -76,7 +76,7 @@ public class ReviewController {
     @GetMapping("/provider/{providerId}")
     public ResponseEntity<?> getReviewsForProvider(@PathVariable Long providerId) {
         try {
-            List<Review> reviews = reviewRepo.findReviewsByProviderId(providerId);
+            List<Review> reviews = reviewRepository.findReviewsByProviderId(providerId);
             if (reviews.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No reviews found for this provider.");
             }
@@ -90,7 +90,7 @@ public class ReviewController {
     @GetMapping("/seeker/{seekerId}")
     public ResponseEntity<?> getReviewsForSeeker(@PathVariable Long seekerId) {
         try {
-            List<Review> reviews = reviewRepo.findReviewsBySeekerId(seekerId);
+            List<Review> reviews = reviewRepository.findReviewsBySeekerId(seekerId);
             if (reviews.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No reviews found for this seeker.");
             }
