@@ -4,11 +4,7 @@ package com.example.ServeEase.Controller;
 import com.example.ServeEase.DTO.BookingDTO;
 import com.example.ServeEase.DTO.BookingDTO1;
 import com.example.ServeEase.DTO.BookingRequestDTO;
-import com.example.ServeEase.Model.Booking;
-import com.example.ServeEase.Model.Category;
-import com.example.ServeEase.Model.ServiceProvider;
-import com.example.ServeEase.Model.ServiceSeeker;
-import com.example.ServeEase.Model.Review;
+import com.example.ServeEase.Model.*;
 import com.example.ServeEase.Repository.*;
 import com.example.ServeEase.Service.EmailService;
 import com.example.ServeEase.Service.RatingService;
@@ -41,7 +37,8 @@ public class BookingController {
     @Autowired
     private EmailService emailService;
 
-
+    @Autowired
+    private PaymentRepo paymentRepository;
 //    @Autowired
 //    private RatingService ratingService;
 
@@ -185,6 +182,10 @@ public class BookingController {
                     .map(booking -> {
                         var reviewOpt = reviewRepository.findByBookingIdAndSeekerId(booking.getBookingId(), seekerId);
                         float rating = reviewOpt.map(Review::getRating).orElse(0.0f);
+
+                        Optional<Payment> paymentOpt = paymentRepository.findByBookingId(booking.getBookingId());
+                        boolean paid = paymentOpt.isPresent() && paymentOpt.get().getAmount() > 0;
+
                         return new BookingDTO1(
                                 booking.getBookingId(),
                                 booking.getCategory() != null ? booking.getCategory().getCategoryName() : null,
@@ -192,7 +193,8 @@ public class BookingController {
                                 booking.getBookingDate(),
                                 rating,
                                 Math.toIntExact(booking.getProvider().getUserId()),
-                                Math.toIntExact(booking.getSeeker().getUserId())
+                                Math.toIntExact(booking.getSeeker().getUserId()),
+                                paid
                         );
                     })
                     .toList();
@@ -235,6 +237,8 @@ public class BookingController {
 
                         // Rating is 0 if no review exists, otherwise use the review's rating
                         float rating = reviewOpt.map(Review::getRating).orElse(0.0f);
+                        Optional<Payment> paymentOpt = paymentRepository.findByBookingId(booking.getBookingId());
+                        boolean paid = paymentOpt.isPresent() && paymentOpt.get().getAmount() > 0;
 
                         return new BookingDTO1(
                                 booking.getBookingId(),
@@ -243,7 +247,9 @@ public class BookingController {
                                 booking.getBookingDate(),
                                 rating,
                                 Math.toIntExact(booking.getProvider().getUserId()),
-                                Math.toIntExact(booking.getSeeker().getUserId())
+                                Math.toIntExact(booking.getSeeker().getUserId()),
+                                paid
+
                         );
                     })
                     .toList();

@@ -12,9 +12,10 @@ public class BookingDTO1 {
     private LocalDateTime bookingDate;
     private int providerId;
     private int seekerId;
+    private boolean paid;
 
     // Constructors
-    public BookingDTO1(Long bookingId, String categoryName, Booking.Status status, LocalDateTime bookingDate, float rating, int providerId, int seekerId) {
+    public BookingDTO1(Long bookingId, String categoryName, Booking.Status status, LocalDateTime bookingDate, float rating, int providerId, int seekerId, boolean paid) {
         this.bookingId = bookingId;
         this.categoryName = categoryName;
         this.status = status;
@@ -22,6 +23,7 @@ public class BookingDTO1 {
         this.bookingDate = bookingDate;
         this.providerId = providerId;
         this.seekerId = seekerId;
+        this.paid = paid;
 
     }
 
@@ -80,5 +82,13 @@ public class BookingDTO1 {
 
     public void setSeekerId(int seekerId) {
         this.seekerId = seekerId;
+    }
+
+    public boolean isPaid() {
+        return paid;
+    }
+
+    public void setPaid(boolean paid) {
+        this.paid = paid;
     }
 }

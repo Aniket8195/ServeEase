@@ -11,19 +11,16 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Inheritance(strategy = InheritanceType.JOINED)
-public abstract class Payment {
+public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long paymentId;
 
     private float amount;
-    private String status;
 
-    @ManyToOne
-    @JoinColumn(name = "booking_id")
-    private Booking booking;
+    @Column(name = "booking_id")
+    private Long bookingId;
 
-    public abstract void processPayment();
-    public abstract void refundPayment();
+
 }
 
