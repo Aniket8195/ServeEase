@@ -49,21 +49,38 @@ public class SecurityConfig {
     }
 
     // CORS configuration
+//    @Bean
+//    public CorsConfigurationSource corsConfigurationSource() {
+//        CorsConfiguration configuration = new CorsConfiguration();
+//
+//        // Add all the allowed origins including your Flutter app and localhost
+//        configuration.setAllowedOrigins(List.of("http://localhost:62775", "http://localhost:8080"));
+//        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Ensure all methods are allowed
+//        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type")); // Add allowed headers
+//
+//        // Allow credentials if required
+//        configuration.setAllowCredentials(true); // Allow cookies or other credentials like JWT tokens
+//
+//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//        source.registerCorsConfiguration("/**", configuration); // Apply the CORS configuration to all endpoints
+//
+//        return source;
+//    }
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        // Add all the allowed origins including your Flutter app and localhost
-        configuration.setAllowedOrigins(List.of("http://localhost:49239", "http://localhost:8080"));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Ensure all methods are allowed
-        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type")); // Add allowed headers
-
-        // Allow credentials if required
-        configuration.setAllowCredentials(true); // Allow cookies or other credentials like JWT tokens
+        // Use setAllowedOriginPatterns to allow all origins but still allow credentials
+        configuration.setAllowedOriginPatterns(List.of("*"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration); // Apply the CORS configuration to all endpoints
+        source.registerCorsConfiguration("/**", configuration);
 
         return source;
     }
+
 }
