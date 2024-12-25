@@ -1,12 +1,12 @@
-FROM openjdk:19-jdk-alpine
+# Stage 1: Build
+FROM openjdk:19-jdk-alpine AS build
 
-# Set the working directory
 WORKDIR /app
 
 # Install required packages
 RUN apk add --no-cache curl unzip
 
-# Specify the Maven version
+# Specify Maven version
 ENV MAVEN_VERSION=3.9.9
 
 # Download and install Maven
@@ -19,15 +19,21 @@ RUN curl -fsSL "https://repo.maven.apache.org/maven2/org/apache/maven/apache-mav
 ENV MAVEN_HOME=/opt/maven
 ENV PATH="${MAVEN_HOME}/bin:${PATH}"
 
-# Copy project files
+# Copy project files and build
 COPY pom.xml .
 COPY src ./src
-
-# Build the application
 RUN mvn clean package -DskipTests
+
+# Stage 2: Runtime
+FROM openjdk:19-jdk-alpine
+
+WORKDIR /app
+
+# Copy only the JAR file from the build stage
+COPY --from=build /app/target/ServeEase-0.0.1-SNAPSHOT.jar .
 
 # Expose the port
 EXPOSE 8080
 
-# Run the JAR file with the correct name
-ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "target/ServeEase-0.0.1-SNAPSHOT.jar"]
+# Run the application
+ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "ServeEase-0.0.1-SNAPSHOT.jar"]
